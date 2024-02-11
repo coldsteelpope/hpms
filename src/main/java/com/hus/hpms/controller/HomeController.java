@@ -1,5 +1,6 @@
 package com.hus.hpms.controller;
 
+import com.hus.hpms.constants.EOrderBy;
 import com.hus.hpms.constants.ElementNames;
 import com.hus.hpms.constants.SessionConst;
 import com.hus.hpms.domain.Comment;
@@ -8,20 +9,20 @@ import com.hus.hpms.domain.Request;
 import com.hus.hpms.dto.department.DepTypeElement;
 import com.hus.hpms.dto.department.DepartmentPerformance;
 import com.hus.hpms.dto.department.DepartmentSession;
-import com.hus.hpms.dto.department.MajorTypeElement;
-import com.hus.hpms.dto.request.RequestUpdateInitParam;
+import com.hus.hpms.dto.request.RequestUpdateGetParam;
 import com.hus.hpms.service.CommentService;
 import com.hus.hpms.service.DepartmentService;
 import com.hus.hpms.service.RequestService;
-import jakarta.servlet.http.HttpServletRequest;
+import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttribute;
-import org.thymeleaf.engine.ElementName;
 
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -36,21 +37,46 @@ public class HomeController
     private final DepartmentService departmentService;
     private final RequestService requestService;
     private final CommentService commentService;
+    private final DefaultConversionService conversionService;
+
+
     @GetMapping("/")
-    public String home(Model model)
+    public String home(Model model, @Nullable @RequestParam(name = "order", required = false) String order)
     {
-        List<DepartmentPerformance> depTypeDepartmentsPerformance = departmentService.findAllDepTypeDepartmentsPerformance();
+        EOrderBy orderBy = EOrderBy.ASC;
+        if (order != null && order.equals("desc"))
+        {
+            orderBy = EOrderBy.DESC;
+        }
+
+        List<DepartmentPerformance> depTypeDepartmentsPerformance = departmentService.findAllDepTypeDepartmentsPerformance(orderBy);
         model.addAttribute("departments", depTypeDepartmentsPerformance);
 
         return "index";
     }
 
     @GetMapping("/major")
-    public String major(Model model)
+    public String major(Model model, @Nullable @RequestParam(name = "order", required = false) String order)
     {
-        List<DepartmentPerformance> majorTypeDepartmentsPerformace = departmentService.findAllMajorTypeDepartmentsPerformace();
+        EOrderBy orderBy = EOrderBy.ASC;
+        if (order != null && order.equals("desc"))
+        {
+            orderBy = EOrderBy.DESC;
+        }
+
+        List<DepartmentPerformance> majorTypeDepartmentsPerformace = departmentService.findAllMajorTypeDepartmentsPerformace(orderBy);
         model.addAttribute("departments", majorTypeDepartmentsPerformace);
         return "major";
+    }
+
+    @GetMapping("/rank")
+    public String rank(Model model, @RequestParam(name = "type") String type)
+    {
+        EOrderBy orderBy = EOrderBy.DESC;
+        List<DepartmentPerformance> departmentPerformances;
+        departmentPerformances = (type.equals("department")) ? departmentService.findAllDepTypeDepartmentsPerformance(orderBy) : departmentService.findAllMajorTypeDepartmentsPerformace(orderBy);
+        model.addAttribute("departments", departmentPerformances);
+        return "rank";
     }
 
     @GetMapping("/login")
@@ -88,15 +114,9 @@ public class HomeController
     @GetMapping("/request/create")
     public String requestCreate(Model model)
     {
-        model.addAttribute("collegeNames", ElementNames.collegeNamesKor);
-        model.addAttribute("areaNames", ElementNames.areaNames);
-        model.addAttribute("detailOneSelectNames", ElementNames.detailOneSelectNames);
-        model.addAttribute("detailTwoSelectNames", ElementNames.detailTwoSelectNames);
-        model.addAttribute("detailThreeSelectNames", ElementNames.detailThreeSelectNames);
-        model.addAttribute("detailFourSelectNames", ElementNames.detailFourSelectNames);
-        model.addAttribute("detailFiveSelectNames", ElementNames.detailFiveSelectNames);
-
+        SetRequestKeysAndValues(model);
         setDepartmentsAndMajorsInModel(model);
+
         return "request/createRequest";
     }
 
@@ -106,22 +126,13 @@ public class HomeController
         setDepartmentsAndMajorsInModel(model);
         List<Request> requests = requestService.findById(id);
 
-        RequestUpdateInitParam requestUpdateInitParam = new RequestUpdateInitParam();
-        setRequestUpdateInitParam(requestUpdateInitParam, requests);
+        RequestUpdateGetParam requestUpdateGetParam = conversionService.convert(requests, RequestUpdateGetParam.class);
 
         model.addAttribute("requests", requests);
-        model.addAttribute("requestUpdateInitParam", requestUpdateInitParam);
+        model.addAttribute("requestUpdateGetParam", requestUpdateGetParam);
         model.addAttribute("collegeNames", ElementNames.collegeNamesKor);
 
-
-        model.addAttribute("areaNames", ElementNames.areaNames);
-        model.addAttribute("detailOneSelectNames", ElementNames.detailOneSelectNames);
-        model.addAttribute("detailTwoSelectNames", ElementNames.detailTwoSelectNames);
-        model.addAttribute("detailThreeSelectNames", ElementNames.detailThreeSelectNames);
-        model.addAttribute("detailFourSelectNames", ElementNames.detailFourSelectNames);
-        model.addAttribute("detailFiveSelectNames", ElementNames.detailFiveSelectNames);
-
-        log.info("requestUpdateInitParam = {}", requestUpdateInitParam);
+        SetRequestKeysAndValues(model);
         return "request/updateRequest";
     }
 
@@ -131,39 +142,14 @@ public class HomeController
         List<Department> departments = departmentService.findAll();
         model.addAttribute("departments", departments);
         model.addAttribute("collegeNames", ElementNames.collegeNamesKor);
-
         return "master/master";
     }
 
-    @GetMapping("/restrict/admin")
-    public String restrictAdmin()
+    private void SetRequestKeysAndValues(Model model)
     {
-        return "restrict/admin";
-    }
-
-    @GetMapping("/restrict/master")
-    public String restrictMaster()
-    {
-        return "restrict/master";
-    }
-
-    private void setRequestUpdateInitParam(RequestUpdateInitParam requestUpdateInitParam, List<Request> requests)
-    {
-        requestUpdateInitParam.setArea(requests.get(0).getArea());
-        requestUpdateInitParam.setDetailArea(requests.get(0).getDetailArea());
-        requestUpdateInitParam.setRequest(requests.get(0).getRequest());
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        String formattedRequestDate = requests.get(0).getRequestDate().format(formatter);
-        String formattedExpectedCompleteDate = requests.get(0).getExpectedCompleteDate().format(formatter);
-
-        requestUpdateInitParam.setRequestDate(formattedRequestDate);
-        requestUpdateInitParam.setExpectedCompleteDate(formattedExpectedCompleteDate);
-
-        for(Request request : requests) {
-            Optional<Department> department = departmentService.findById(request.getDepartmentId());
-            requestUpdateInitParam.getDepartmentIds().add(request.getDepartmentId());
-            department.ifPresent(value -> requestUpdateInitParam.getDepartments().add(value));
+        for (int index = 0; index < ElementNames.requestKeys.length; ++index)
+        {
+            model.addAttribute(ElementNames.requestKeys[index], ElementNames.requestValues[index]);
         }
     }
 
@@ -171,10 +157,10 @@ public class HomeController
     {
         List<DepTypeElement> depTypeElements = departmentService.findAllTypeDep();
         model.addAttribute("depTypeElements", depTypeElements);
-
         for (int index = 0; index < ElementNames.collegeNamesEng.length; ++index)
         {
             model.addAttribute(ElementNames.collegeNamesEng[index], departmentService.findAllTypeMajor(ElementNames.collegeNamesKor[index]));
+            log.info("elementName: {}, findAllTypeMajor: {}", ElementNames.collegeNamesEng[index], departmentService.findAllTypeMajor(ElementNames.collegeNamesKor[index]));
         }
     }
 }

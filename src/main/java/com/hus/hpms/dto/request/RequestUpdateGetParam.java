@@ -1,5 +1,6 @@
 package com.hus.hpms.dto.request;
 
+import com.hus.hpms.domain.Department;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -11,19 +12,19 @@ import java.util.List;
 @Data
 @EqualsAndHashCode
 @AllArgsConstructor
-public class RequestCRUDParam
+public class RequestUpdateGetParam
 {
-    private String id;
-    private Integer area;
     private List<Long> departmentIds;
-    private List<String> detailArea;
+    private List<Department> departments;
+    private Integer area;
+    private String detailArea;
     private String request;
-    private String currentDate;
+    private String requestDate;
     private String expectedCompleteDate;
 
-    public RequestCRUDParam()
+    public RequestUpdateGetParam()
     {
+        this.departments = new ArrayList<>();
         this.departmentIds = new ArrayList<>();
-        this.detailArea = new ArrayList<>();
     }
 }

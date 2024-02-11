@@ -1,26 +1,22 @@
 package com.hus.hpms.repository.request.Impl;
 
+import com.hus.hpms.constants.EStatus;
 import com.hus.hpms.constants.RequestSql;
 import com.hus.hpms.domain.Request;
-import com.hus.hpms.repository.request.RequestDeleteParam;
 import com.hus.hpms.repository.request.RequestRepository;
-import com.hus.hpms.repository.request.RequestStatusUpdateParam;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 
 @Slf4j
@@ -28,33 +24,29 @@ import java.util.UUID;
 public class JdbcRequestRepository implements RequestRepository
 {
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-    private final SimpleJdbcInsert simpleJdbcInsert;
 
     public JdbcRequestRepository(DataSource dataSource)
     {
         this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
-        this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
-                .withTableName("REQUEST");
     }
 
     @Override
     public List<Request> saveAll(List<Request> requests)
     {
         String id = UUID.randomUUID().toString();
-        for (Request request : requests) {
-            request.setId(id);
-            SqlParameterSource param = new BeanPropertySqlParameterSource(request);
-            namedParameterJdbcTemplate.update(RequestSql.INSERT_REQUEST, param);
-            //simpleJdbcInsert.executeAndReturnKey(param);
 
+        for (Request request : requests)
+        {
+            saveRequest(request, id);
         }
+
         return requests;
     }
 
     @Override
-    public void delete(RequestDeleteParam requestDeleteParam)
+    public void delete(String id)
     {
-        SqlParameterSource param = new BeanPropertySqlParameterSource(requestDeleteParam);
+        Map<String, Object> param = Map.of("id", id);
         namedParameterJdbcTemplate.update(RequestSql.DELETE_REQUEST, param);
     }
 
@@ -66,17 +58,30 @@ public class JdbcRequestRepository implements RequestRepository
     }
 
     @Override
-    public void deleteAllById(String id) {
-        Map<String, Object> param = Map.of("id", id);
-        namedParameterJdbcTemplate.update(RequestSql.DELETE_REQUEST, param);
-    }
-
-    @Override
-    public void updateStatus(String id, String status) {
-        SqlParameterSource param = new MapSqlParameterSource()
-                .addValue("status", status)
-                .addValue("id", id);
-        namedParameterJdbcTemplate.update(RequestSql.UPDATE_STATUS_BY_ID, param);
+    public void updateStatus(String id, EStatus currentStatus)
+    {
+        if (currentStatus == EStatus.READY)
+        {
+            SqlParameterSource param = new MapSqlParameterSource()
+                    .addValue("id", id)
+                    .addValue("status", "processing");
+            namedParameterJdbcTemplate.update(RequestSql.UPDATE_STATUS_FROM_READY_TO_PROCESSING, param);
+        }
+        else if (currentStatus == EStatus.PROCESSING)
+        {
+            SqlParameterSource param = new MapSqlParameterSource()
+                    .addValue("id", id)
+                    .addValue("status", "done")
+                    .addValue("completeDate", LocalDateTime.now());
+            namedParameterJdbcTemplate.update(RequestSql.UPDATE_STATUS_FROM_PROCESSING_TO_DONE, param);
+        }
+        else
+        {
+            SqlParameterSource param = new MapSqlParameterSource()
+                    .addValue("id", id)
+                    .addValue("status", "processing");
+            namedParameterJdbcTemplate.update(RequestSql.UPDATE_STATUS_FROM_DONE_TO_PROCESSING, param);
+        }
     }
 
     @Override
@@ -89,12 +94,18 @@ public class JdbcRequestRepository implements RequestRepository
     @Override
     public void update(List<Request> requests, String id)
     {
-        deleteAllById(id);
-        for (Request request : requests) {
-            request.setId(id);
-            SqlParameterSource param = new BeanPropertySqlParameterSource(request);
-            namedParameterJdbcTemplate.update(RequestSql.INSERT_REQUEST, param);
+        delete(id);
+        for (Request request : requests)
+        {
+            saveRequest(request, id);
         }
+    }
+
+    private void saveRequest(Request request, String id)
+    {
+        request.setId(id);
+        SqlParameterSource param = new BeanPropertySqlParameterSource(request);
+        namedParameterJdbcTemplate.update(RequestSql.INSERT_REQUEST, param);
     }
 
     private RowMapper<Request> requestRowMapper()

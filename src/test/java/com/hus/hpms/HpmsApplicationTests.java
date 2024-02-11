@@ -7,7 +7,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 class HpmsApplicationTests
 {
+
     @Test
     void contextLoads() {
+        final int a;
+        a = 3;
+
     }
 }

@@ -1,10 +1,14 @@
 package com.hus.hpms.dto.department;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 @Data
 @EqualsAndHashCode
+@NoArgsConstructor
+@AllArgsConstructor
 public class DepartmentSession
 {
     private Long id;
@@ -13,23 +17,4 @@ public class DepartmentSession
     private Boolean commit;
     private Boolean master;
     private Boolean admin;
-
-    public DepartmentSession() {}
-
-    public DepartmentSession(
-            Long id,
-            String field,
-            String detailField,
-            Boolean commit,
-            Boolean master,
-            Boolean admin
-    )
-    {
-        this.id = id;
-        this.field = field;
-        this.detailField = detailField;
-        this.commit = commit;
-        this.master = master;
-        this.admin = admin;
-    }
 }

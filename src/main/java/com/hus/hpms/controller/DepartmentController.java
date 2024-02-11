@@ -11,10 +11,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Optional;
 
@@ -25,9 +27,10 @@ import java.util.Optional;
 public class DepartmentController
 {
     private final DepartmentService departmentService;
+    private final DefaultConversionService conversionService;
 
     @PostMapping("/register")
-    public String register(DepartmentRegisterParam departmentRegisterParam)
+    public String register(DepartmentRegisterParam departmentRegisterParam, RedirectAttributes redirectAttributes)
     {
         Department department = new Department();
 
@@ -35,28 +38,35 @@ public class DepartmentController
         department.setLoginPw(departmentRegisterParam.getLoginPw());
         setFieldAndDetailField(department, departmentRegisterParam);
 
-        Department result = departmentService.save(department);
-        return "redirect:/";
+        Optional<Department> savedDepartment = departmentService.save(department);
+        if (savedDepartment.isEmpty())
+        {
+            redirectAttributes.addFlashAttribute("saveFail", true);
+            return "redirect:/register";
+        }
+        else
+        {
+            return "redirect:/login";
+        }
     }
 
     @PostMapping("/login")
-    public String login(DepartmentLoginParam departmentLoginParam, HttpServletRequest request)
+    public String login(DepartmentLoginParam departmentLoginParam, HttpServletRequest request, RedirectAttributes redirectAttributes)
     {
         Optional<Department> department = departmentService.login(departmentLoginParam);
 
         if(department.isEmpty())
         {
             // 로그인 실패 + Validation 공부 후 더 자세히 구현하기
-            log.info("Login Fail");
-            return "redirect:/";
+            redirectAttributes.addFlashAttribute("loginFail", true);
+            return "redirect:/login";
         }
         else
         {
             // 로그인 성공
-            DepartmentSession departmentSession = new DepartmentSession();
-            setDepartmentSession(departmentSession, department.get());
-
+            DepartmentSession departmentSession = conversionService.convert(department.get(), DepartmentSession.class);
             HttpSession session = request.getSession();
+
             session.setAttribute(SessionConst.LOGIN_MEMBER, departmentSession);
             return "redirect:/";
         }
@@ -85,17 +95,6 @@ public class DepartmentController
     {
         departmentService.updateStatus(id);
         return "redirect:/master";
-    }
-
-
-    private void setDepartmentSession(DepartmentSession departmentSession, Department department)
-    {
-        departmentSession.setId(department.getId());
-        departmentSession.setField(department.getField());
-        departmentSession.setDetailField(department.getDetailField());
-        departmentSession.setCommit(department.getCommit());
-        departmentSession.setMaster(department.getMaster());
-        departmentSession.setAdmin(department.getAdmin());
     }
 
     private void setFieldAndDetailField(Department department, DepartmentRegisterParam departmentRegisterParam)

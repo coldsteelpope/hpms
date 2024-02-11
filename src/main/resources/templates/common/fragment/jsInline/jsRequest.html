@@ -3,8 +3,8 @@
 <body>
 
 <script th:inline="javascript" th:fragment="jsInitUpdateDepartments">
-    const exDepartments = [[${requestUpdateInitParam.departments}]];
-    addedDepartmentIds = [[${requestUpdateInitParam.departmentIds}]]
+    const exDepartments = [[${requestUpdateGetParam.departments}]];
+    addedDepartmentIds = [[${requestUpdateGetParam.departmentIds}]]
     for (index = 0; index < exDepartments.length; ++index)
     {
         const exPart = document.createElement("tr");

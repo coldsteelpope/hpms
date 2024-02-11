@@ -1,8 +1,14 @@
 package com.hus.hpms.dto.department;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 @Data
+@EqualsAndHashCode
+@NoArgsConstructor
+@AllArgsConstructor
 public class DepartmentRegisterParam
 {
     private String loginId;
@@ -11,23 +17,4 @@ public class DepartmentRegisterParam
     private String field;
     private String fieldType;
     private String detailField;
-
-    public DepartmentRegisterParam() {}
-
-    public DepartmentRegisterParam(
-            String loginId,
-            String loginPw,
-            String departmentType,
-            String field,
-            String fieldType,
-            String detailField
-    )
-    {
-        this.loginId = loginId;
-        this.loginPw = loginPw;
-        this.departmentType = departmentType;
-        this.field = field;
-        this.fieldType = fieldType;
-        this.detailField = detailField;
-    }
 }

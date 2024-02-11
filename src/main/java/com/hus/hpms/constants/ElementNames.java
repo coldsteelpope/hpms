@@ -2,6 +2,16 @@ package com.hus.hpms.constants;
 
 public interface ElementNames
 {
+    public String[] requestKeys = {
+            "collegeNames",
+            "areaNames",
+            "detailOneSelectNames",
+            "detailTwoSelectNames",
+            "detailThreeSelectNames",
+            "detailFourSelectNames",
+            "detailFiveSelectNames"
+    };
+
     public String[] collegeNamesEng = {
             "theologicalCollegeSelect",
             "humanitiesAndSocialSciencesCollege",
@@ -71,5 +81,15 @@ public interface ElementNames
             "5.4. 취창업 지원 평가",
             "5.5. 사회 봉사",
             "5.6. 지역 사회 연계 협력"
+    };
+
+    public String[][] requestValues = {
+            collegeNamesKor,
+            areaNames,
+            detailOneSelectNames,
+            detailTwoSelectNames,
+            detailThreeSelectNames,
+            detailFourSelectNames,
+            detailFiveSelectNames
     };
 }

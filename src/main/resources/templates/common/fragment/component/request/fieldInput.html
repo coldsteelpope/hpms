@@ -31,7 +31,7 @@
                             <option
                                     th:each="humanitiesAndSocialSciencesCollegeElement : ${humanitiesAndSocialSciencesCollege}"
                                     th:text="${humanitiesAndSocialSciencesCollegeElement.detailField}"
-                                    th:value="${theologicalCollegeSelectElement.id}"
+                                    th:value="${humanitiesAndSocialSciencesCollegeElement.id}"
                             >부서명</option>
                         </select>
                         <!-- 경영 대학 -->
@@ -55,7 +55,7 @@
                             <option
                                     th:each="artCollegeElement : ${artCollege}"
                                     th:text="${artCollegeElement.detailField}"
-                                    th:value="${artCollege.id}"
+                                    th:value="${artCollegeElement.id}"
                             ></option>
                         </select>
                         <!-- 웨슬리 창의 융합 대학 -->
@@ -63,7 +63,8 @@
                             <option
                                     th:each="wesleyCollegeElement : ${wesleyCollege}"
                                     th:text="${wesleyCollegeElement.detailField}"
-                                    th:value="${wesleyCollege.id}"
+                                    th:value="${wesleyCollegeElement.id}"
+
                             ></option>
                         </select>
                     </div>

@@ -1,6 +1,7 @@
 package com.hus.hpms.repository.department.Impl;
 
 import com.hus.hpms.constants.DepartmentSql;
+import com.hus.hpms.constants.EOrderBy;
 import com.hus.hpms.domain.Department;
 import com.hus.hpms.dto.department.*;
 import com.hus.hpms.repository.department.DepartmentCommitUpdateParam;
@@ -42,7 +43,7 @@ public class JdbcDepartmentRepositoryImpl implements DepartmentRepository
     }
 
     @Override
-    public Department save(Department department)
+    public Optional<Department> save(Department department)
     {
         boolean isExisted = isExistedDepartment(department);
         if(!isExisted)
@@ -55,11 +56,11 @@ public class JdbcDepartmentRepositoryImpl implements DepartmentRepository
             SqlParameterSource param = new BeanPropertySqlParameterSource(department);
             department.setId(simpleJdbcInsert.executeAndReturnKey(param).longValue());
 
-            return department;
+            return Optional.of(department);
         }
         else
         {
-            return null;
+            return Optional.empty();
         }
     }
 
@@ -176,13 +177,15 @@ public class JdbcDepartmentRepositoryImpl implements DepartmentRepository
     }
 
     @Override
-    public List<DepartmentPerformance> findAllDepTypeDepartmentsPerformance() {
-        return namedParameterJdbcTemplate.query(DepartmentSql.FIND_ALL_DEP_TYPE_DEPARTMENTS_PERFORMANCE, departmentPerformanceRowMapper());
+    public List<DepartmentPerformance> findAllDepTypeDepartmentsPerformance(EOrderBy orderBy) {
+        String sql = (orderBy == EOrderBy.ASC) ? DepartmentSql.FIND_ALL_DEP_TYPE_DEPARTMENTS_PERFORMANCE_ORDER_BY_DONE_RATIO : DepartmentSql.FIND_ALL_DEP_TYPE_DEPARTMENTS_PERFORMANCE_ORDER_BY_DONE_RATIO_DESC;
+        return namedParameterJdbcTemplate.query(sql, departmentPerformanceRowMapper());
     }
 
     @Override
-    public List<DepartmentPerformance> findAllMajorTypeDepartmentsPerformace() {
-        return namedParameterJdbcTemplate.query(DepartmentSql.FIND_ALL_MAJOR_TYPE_DEPARTMENTS_PERFORMANCE, departmentPerformanceRowMapper());
+    public List<DepartmentPerformance> findAllMajorTypeDepartmentsPerformace(EOrderBy orderBy) {
+        String sql = (orderBy == EOrderBy.ASC) ? DepartmentSql.FIND_ALL_MAJOR_TYPE_DEPARTMENTS_PERFORMANCE_ORDER_BY_DONE_RATIO : DepartmentSql.FIND_ALL_MAJOR_TYPE_DEPARTMENTS_PERFORMANCE_ORDER_BY_DONE_RATIO_DESC;
+        return namedParameterJdbcTemplate.query(sql, departmentPerformanceRowMapper());
     }
 
     private RowMapper<DepTypeElement> depTypeElementRowMapper()

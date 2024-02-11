@@ -15,16 +15,11 @@ public class AdminCheckInterceptor implements HandlerInterceptor
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception
     {
-        String requestURI = request.getRequestURI();
         HttpSession session = request.getSession(false);
         DepartmentSession departmentSession = (DepartmentSession) session.getAttribute(SessionConst.LOGIN_MEMBER);
-
-        log.info("[-] AdminCheckInterceptor");
-        log.info("departmentSession = {}", departmentSession);
-
         if (!departmentSession.getAdmin())
         {
-            response.sendRedirect("/restrict/admin");
+            response.sendError(403);
             return false;
         }
         return true;

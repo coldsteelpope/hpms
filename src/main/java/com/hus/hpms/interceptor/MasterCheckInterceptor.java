@@ -18,7 +18,7 @@ public class MasterCheckInterceptor implements HandlerInterceptor
         DepartmentSession departmentSession = (DepartmentSession) session.getAttribute(SessionConst.LOGIN_MEMBER);
         if (!departmentSession.getMaster())
         {
-            response.sendRedirect("/restrict/master");
+            response.sendError(403);
             return false;
         }
         return true;

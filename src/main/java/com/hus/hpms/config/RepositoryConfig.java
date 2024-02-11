@@ -24,26 +24,13 @@ import javax.sql.DataSource;
 public class RepositoryConfig
 {
     private final DataSource dataSource;
-
     private final PasswordEncoder passwordEncoder;
 
-    @Bean
-    public DepartmentService departmentService()
-    {
-        return new DepartmentService(departmentRepository(), requestRepository());
-    }
     @Bean
     public DepartmentRepository departmentRepository()
     {
         return new JdbcDepartmentRepositoryImpl(dataSource, passwordEncoder);
     }
-
-    @Bean
-    public CommentService commentService()
-    {
-        return new CommentService(commentRepository(), departmentRepository(), commentFileRepository());
-    }
-
     @Bean
     public CommentRepository commentRepository()
     {
@@ -51,21 +38,11 @@ public class RepositoryConfig
     }
 
     @Bean
-    public RequestService requestService()
-    {
-        return new RequestService(requestRepository());
-    }
-    @Bean
     public RequestRepository requestRepository()
     {
         return new JdbcRequestRepository(dataSource);
     }
 
-    @Bean
-    public CommentFileService commentFileService()
-    {
-        return new CommentFileService(commentFileRepository());
-    }
     @Bean
     public CommentFileRepository commentFileRepository()
     {

@@ -1,13 +1,17 @@
 package com.hus.hpms.dto.department;
 
 import com.hus.hpms.domain.Request;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Data
 @EqualsAndHashCode
+@NoArgsConstructor
+@AllArgsConstructor
 public class DepartmentPerformance
 {
     private Long id;
@@ -18,9 +22,5 @@ public class DepartmentPerformance
     private Long processingRequests;
     private Long doneRequests;
     private Double doneRatio;
-    private Double processingRatio;
-    private Double ReadyRatio;
-
     private List<Request> requests;
-    public DepartmentPerformance() {}
 }

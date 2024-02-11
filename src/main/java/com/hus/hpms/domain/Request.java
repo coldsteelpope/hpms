@@ -2,6 +2,7 @@ package com.hus.hpms.domain;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -14,15 +15,21 @@ public class Request
     private String id;
     private Long departmentId;
 
-    private String area;
+    private Integer area;
     private String detailArea;
 
     private String request;
     private String status;
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime requestDate;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime completeDate;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime expectedCompleteDate;
+
     private LocalDateTime insertDate;
     private LocalDateTime updateDate;
 

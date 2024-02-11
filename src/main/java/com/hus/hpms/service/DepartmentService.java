@@ -1,6 +1,7 @@
 package com.hus.hpms.service;
 
 import com.hus.hpms.constants.DepartmentSql;
+import com.hus.hpms.constants.EOrderBy;
 import com.hus.hpms.domain.Department;
 import com.hus.hpms.dto.department.*;
 import com.hus.hpms.repository.department.DepartmentRepository;
@@ -19,7 +20,7 @@ public class DepartmentService
     private final DepartmentRepository departmentRepository;
     private final RequestRepository requestRepository;
 
-    public Department save(Department department)
+    public Optional<Department> save(Department department)
     {
         return departmentRepository.save(department);
     }
@@ -83,36 +84,21 @@ public class DepartmentService
         return departmentRepository.findAll();
     }
 
-    public List<DepartmentPerformance> findAllDepTypeDepartmentsPerformance()
+    public List<DepartmentPerformance> findAllDepTypeDepartmentsPerformance(EOrderBy orderBy)
     {
-        List<DepartmentPerformance> departments = departmentRepository.findAllDepTypeDepartmentsPerformance();
+        List<DepartmentPerformance> departments = departmentRepository.findAllDepTypeDepartmentsPerformance(orderBy);
         for (DepartmentPerformance department : departments) {
             department.setRequests(requestRepository.findAllRequestsByDepartmentId(department.getId()));
-
-            Double doneRatio = (department.getTotalRequests() == 0) ? 0.0 : (department.getDoneRequests() / (double) department.getTotalRequests()) * 100;
-            Double processingRatio = (department.getTotalRequests() == 0) ? 0.0 : (department.getProcessingRequests() / (double) department.getTotalRequests()) * 100;
-            Double readyRatio = (department.getTotalRequests() == 0) ? 0.0 : (department.getReadyRequests() / (double) department.getTotalRequests()) * 100;
-
-            department.setProcessingRatio(processingRatio);
-            department.setDoneRatio(doneRatio);
-            department.setReadyRatio(readyRatio);
         }
         return departments;
     }
 
-    public List<DepartmentPerformance> findAllMajorTypeDepartmentsPerformace()
+    public List<DepartmentPerformance> findAllMajorTypeDepartmentsPerformace(EOrderBy orderBy)
     {
-        List<DepartmentPerformance> departments = departmentRepository.findAllMajorTypeDepartmentsPerformace();
+
+        List<DepartmentPerformance> departments = departmentRepository.findAllMajorTypeDepartmentsPerformace(orderBy);
         for (DepartmentPerformance department : departments) {
             department.setRequests(requestRepository.findAllRequestsByDepartmentId(department.getId()));
-
-            Double doneRatio = (department.getTotalRequests() == 0) ? 0.0 : (department.getDoneRequests() / (double) department.getTotalRequests()) * 100;
-            Double processingRatio = (department.getTotalRequests() == 0) ? 0.0 : (department.getProcessingRequests() / (double) department.getTotalRequests()) * 100;
-            Double readyRatio = (department.getTotalRequests() == 0) ? 0.0 : (department.getReadyRequests() / (double) department.getTotalRequests()) * 100;
-
-            department.setProcessingRatio(processingRatio);
-            department.setDoneRatio(doneRatio);
-            department.setReadyRatio(readyRatio);
         }
         return departments;
     }

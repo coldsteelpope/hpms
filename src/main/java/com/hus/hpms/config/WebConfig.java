@@ -1,6 +1,8 @@
 package com.hus.hpms.config;
 
+import com.hus.hpms.constants.InterceptorPatterns;
 import com.hus.hpms.interceptor.AdminCheckInterceptor;
+import com.hus.hpms.interceptor.CommitCheckInterceptor;
 import com.hus.hpms.interceptor.LoginCheckInterceptor;
 import com.hus.hpms.interceptor.MasterCheckInterceptor;
 import org.springframework.context.annotation.Configuration;
@@ -15,18 +17,20 @@ public class WebConfig implements WebMvcConfigurer
     {
         registry.addInterceptor(new LoginCheckInterceptor())
                 .order(1)
-                .addPathPatterns("/**")
-                .excludePathPatterns(
-                        "/login", "/logout", "/css/**", "/*.ico", "/error", "/register",
-                        "/api/**"
-                );
+                .addPathPatterns(InterceptorPatterns.ALL_PATH_PATTERNS)
+                .excludePathPatterns(InterceptorPatterns.AUTH_EXCLUDE_PATH_PATTERNS);
+
+        registry.addInterceptor(new CommitCheckInterceptor())
+                        .order(2)
+                        .addPathPatterns(InterceptorPatterns.ALL_PATH_PATTERNS)
+                        .excludePathPatterns(InterceptorPatterns.AUTH_EXCLUDE_PATH_PATTERNS);
 
         registry.addInterceptor(new AdminCheckInterceptor())
                 .order(3)
-                .addPathPatterns("/master", "/request/update/**", "/api/request/**", "/request/create");
+                .addPathPatterns(InterceptorPatterns.ADMIN_ADD_PATH_PATTERNS);
 
         registry.addInterceptor(new MasterCheckInterceptor())
                 .order(4)
-                .addPathPatterns("/master");
+                .addPathPatterns(InterceptorPatterns.MASTER_ADD_PATH_PATTERNS);
     }
 }

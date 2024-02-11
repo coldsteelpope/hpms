@@ -18,7 +18,7 @@ public class CommitCheckInterceptor implements HandlerInterceptor
 
         if(!departmentSession.getCommit())
         {
-            response.sendRedirect("/login?redirectURL=" + requestURI);
+            response.sendRedirect("/error/commit");
             return false;
         }
         return true;
