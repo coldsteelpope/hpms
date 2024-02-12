@@ -13,6 +13,7 @@
 이에 개인적으로 Spring Framework 사용법을 복습할 겸 부서 관리 시스템을 Spring Boot로 후배와 함께 다시 개발하기로 결정했습니다. 해당 프로젝트가 완성되면 다시 포팅을 하자고 건의들일 생각입니다.
 
 ## 2. 설계
+![hpmsERD](https://github.com/coldsteelpope/hpms/assets/128117575/a44ff3cc-0a52-4d50-a9d7-3f812caeb6e0)
 
 ## 3. 기술
 <img src="https://img.shields.io/badge/java-007396?style=for-the-badge&logo=java&logoColor=white"> <img src="https://img.shields.io/badge/springboot-6DB33F?style=for-the-badge&logo=spring&logoColor=white"> <img src="https://img.shields.io/badge/bootstrap-7952B3?style=for-the-badge&logo=bootstrap&logoColor=white"> <img src="https://img.shields.io/badge/thymeleaf-005F0F?style=for-the-badge&logo=thymeleaf&logoColor=white"> <img src="https://github.com/coldsteelpope/minitube/assets/128117575/67c28619-635c-42a4-a39a-a48dec9b1201" alt="h2database" height="27.99">
