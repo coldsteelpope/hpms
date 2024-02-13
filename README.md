@@ -42,13 +42,16 @@
 ### 4.4. 요청사항 페이지
 #### 4.4.1 요청사항 상태 변경
 ![준비중에서진행중으로](https://github.com/coldsteelpope/hpms/assets/128117575/4e5449b2-4970-4e1e-877c-9bf5f2aa556d)
+
 요청 사항 상태를 "준비 중"에서 "진행 중"으로 변경합니다.
 
 ![진행중에서완료](https://github.com/coldsteelpope/hpms/assets/128117575/0c9f0fad-aff6-4db2-87bc-441eb819d235)
+
 요청 사항 상태를 "진행 중"에서 "완료"로 변경합니다.
 
 #### 4.4.2. 댓글 작성
 ![파일과 함께 댓글 작성하기](https://github.com/coldsteelpope/hpms/assets/128117575/3c70af8d-16c4-48be-83ca-dbc1f8c7f724)
+
 파일까지 첨부해 댓글 작성이 가능합니다.
 
 #### 4.4.3. 댓글 수정
